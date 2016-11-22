@@ -56,6 +56,10 @@ io.on('connection', function(socket) {
        socket.broadcast.emit('Somebody guessed.');
        
    });
+   
+   socket.on('disconnect', function() {
+       console.log('User disconnected');
+   })
 });
 
 server.listen(process.env.PORT || 8080);
