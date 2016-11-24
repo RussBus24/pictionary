@@ -15,22 +15,28 @@ var pictionary = function() {
     context = canvas[0].getContext('2d');
     canvas[0].width = canvas[0].offsetWidth;
     canvas[0].height = canvas[0].offsetHeight;
-    canvas.on('mousedown', function(event) {
-        drawing = true;
-    });
-    canvas.on('mouseup', function(event) {
-        drawing = false;
-    });
-    canvas.on('mousemove', function(event) {
-        var offset = canvas.offset();
-        var position = {x: event.pageX - offset.left,
-                        y: event.pageY - offset.top};
-        if (drawing) {
-            draw(position);
-            socket.emit('drawer', position);
-        }
-    });
     
+    var setDrawer = function() {
+        canvas.on('mousedown', function(event) {
+            drawing = true;
+        });
+        canvas.on('mouseup', function(event) {
+            drawing = false;
+        });
+        canvas.on('mousemove', function(event) {
+            var offset = canvas.offset();
+            var position = {x: event.pageX - offset.left,
+                            y: event.pageY - offset.top};
+            if (drawing) {
+                draw(position);
+                socket.emit('drawer', position);
+            }
+        });
+    }
+    
+    var setupGuesser = function() {
+        canvas.off();
+    }
     var guessBox;
 
     var onKeyDown = function(event) {
@@ -43,7 +49,7 @@ var pictionary = function() {
         socket.emit('guesses', guessBox);
     };
     
-    guessBox = $('#guess input');
+    guessBox = $('#guess input'.toLowerCase());
     guessBox.on('keydown', onKeyDown);
     
     function reject() {
@@ -65,20 +71,26 @@ var pictionary = function() {
     
     function setRole(role) {
         if (role == 'drawer') {
-            draw;
+            setDrawer();
             //enable drawing on canvas
         }
         else {
-            
+            setupGuesser();
             //role is guesser
             //disable drawing on canvas
             //enable guessing logic
         }
     }
     
+    function setWord(validWord) {
+        $('.role').append(validWord);
+    }
+    
     socket.on('draw', remoteDraw);
     socket.on('reject', reject);
     socket.on('role', setRole);
+    socket.on('word', setWord);
+    socket.on('answer', nextWord);
 };
 
 $(document).ready(function() {

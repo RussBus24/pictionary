@@ -28,16 +28,26 @@ var MAX = 4;
 var drawer;
 var guesser;
 var drawWord;
+var validWord;
 
 io.on('connection', function(socket) {
    console.log('User connected. Waiting for other users...');
+   
+   //var startDrawer = function(theDrawer) 
+   function startDrawer(theDrawer) {
+    drawWord = Math.floor(Math.random() * words.length);
+    validWord = words[drawWord];
+    theDrawer.emit('role', 'drawer');
+    theDrawer[drawer].emit('word', validWord);
+    theDrawer[drawer].broadcast.emit('role', 'guesser');
+   };
    
    if (users.length < MAX) {
        users.push(socket);
        if (users.length == MAX) {
            drawer = Math.floor(Math.random() * MAX);
-           drawWord = Math.floor((Math.random() * words.length) + 1);
-           users[drawer].emit('role', 'drawer');
+           startDrawer(users[drawer]);
+          
        }
    } else {
        socket.emit('reject');
@@ -55,6 +65,17 @@ io.on('connection', function(socket) {
        console.log('Somebody submitted a guess.');
        socket.broadcast.emit('Somebody guessed.');
        
+       if (guessBox == words[drawWord]) {
+           socket.emit('answer', function() {
+               console.log('Correct answer.');
+           });
+       }
+       else {
+           
+       }
+       //write logic to see if guess is correct.
+       //find index of socket in user array, set drawer variable
+       //call startDrawer(socket)
    });
    
    socket.on('disconnect', function() {
