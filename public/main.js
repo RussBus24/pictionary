@@ -45,8 +45,8 @@ var pictionary = function() {
             return;
         }
         console.log(guessBox.val());
+        socket.emit('guesses', guessBox.val());
         guessBox.val('');
-        socket.emit('guesses', guessBox);
     };
     
     guessBox = $('#guess input');
