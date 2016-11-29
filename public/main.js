@@ -32,24 +32,24 @@ var pictionary = function() {
                 socket.emit('drawer', position);
             }
         });
-    }
+    };
     
     var setupGuesser = function() {
         canvas.off();
-    }
+    };
+    
     var guessBox;
 
     var onKeyDown = function(event) {
         if (event.keyCode != 13) { // Enter
             return;
         }
-        //$('#guess input').text(guessBox.val());
         console.log(guessBox.val());
         guessBox.val('');
         socket.emit('guesses', guessBox);
     };
     
-    guessBox = $('#guess input'.toLowerCase());
+    guessBox = $('#guess input');
     guessBox.on('keydown', onKeyDown);
     
     function reject() {
@@ -70,6 +70,7 @@ var pictionary = function() {
     }
     
     function setRole(role) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
         if (role == 'drawer') {
             setDrawer();
             //enable drawing on canvas
@@ -83,7 +84,17 @@ var pictionary = function() {
     }
     
     function setWord(validWord) {
-        $('.role').append(validWord);
+        $('.role').append('');
+        $('.role').append("You are the drawer. Draw a " + validWord);
+    }
+    
+    function nextWord(param) {
+        console.log('Somebody guessed correctly. Starting a new game');
+        
+    }
+    
+    function guessMade(guessBox) {
+        console.log('Somebody gussesd ' + guessBox);
     }
     
     socket.on('draw', remoteDraw);
@@ -91,6 +102,7 @@ var pictionary = function() {
     socket.on('role', setRole);
     socket.on('word', setWord);
     socket.on('answer', nextWord);
+    socket.on('guess', guessMade);
 };
 
 $(document).ready(function() {

@@ -24,7 +24,7 @@ var words = [
     "space"
 ];
 var users = [];
-var MAX = 4;
+var MAX = 2;
 var drawer;
 var guesser;
 var drawWord;
@@ -33,13 +33,12 @@ var validWord;
 io.on('connection', function(socket) {
    console.log('User connected. Waiting for other users...');
    
-   //var startDrawer = function(theDrawer) 
    function startDrawer(theDrawer) {
     drawWord = Math.floor(Math.random() * words.length);
     validWord = words[drawWord];
     theDrawer.emit('role', 'drawer');
-    theDrawer[drawer].emit('word', validWord);
-    theDrawer[drawer].broadcast.emit('role', 'guesser');
+    theDrawer.emit('word', validWord);
+    theDrawer.broadcast.emit('role', 'guesser');
    };
    
    if (users.length < MAX) {
@@ -47,6 +46,7 @@ io.on('connection', function(socket) {
        if (users.length == MAX) {
            drawer = Math.floor(Math.random() * MAX);
            startDrawer(users[drawer]);
+           console.log('The index of the next drawer is: ' + drawer);
           
        }
    } else {
@@ -63,15 +63,16 @@ io.on('connection', function(socket) {
    
    socket.on('guesses', function(guessBox) {
        console.log('Somebody submitted a guess.');
-       socket.broadcast.emit('Somebody guessed.');
+       socket.broadcast.emit('guess', guessBox);
        
-       if (guessBox == words[drawWord]) {
-           socket.emit('answer', function() {
-               console.log('Correct answer.');
-           });
+       if (guessBox == validWord) {
+           io.emit('answer');
+           startDrawer(socket);
+           drawer = users.indexOf(socket);
+           console.log('The index of the next drawer is: ' + drawer);
        }
        else {
-           
+           console.log('Was it the right guess?');
        }
        //write logic to see if guess is correct.
        //find index of socket in user array, set drawer variable
@@ -79,6 +80,8 @@ io.on('connection', function(socket) {
    });
    
    socket.on('disconnect', function() {
+       var userSocket = users.indexOf(socket);
+       users.splice(userSocket, 1);
        console.log('User disconnected');
    })
 });
