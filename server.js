@@ -39,7 +39,7 @@ io.on('connection', function(socket) {
     theDrawer.emit('role', 'drawer');
     theDrawer.emit('word', validWord);
     theDrawer.broadcast.emit('role', 'guesser');
-   };
+   }
    
    if (users.length < MAX) {
        users.push(socket);

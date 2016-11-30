@@ -35,6 +35,8 @@ var pictionary = function() {
     };
     
     var setupGuesser = function() {
+        context.clearRect(0, 0, canvas[0].width, canvas[0].height);
+        $('.role').append('');
         canvas.off();
     };
     
@@ -70,7 +72,7 @@ var pictionary = function() {
     }
     
     function setRole(role) {
-        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.clearRect(0, 0, canvas[0].width, canvas[0].height);
         if (role == 'drawer') {
             setDrawer();
             //enable drawing on canvas
@@ -84,8 +86,9 @@ var pictionary = function() {
     }
     
     function setWord(validWord) {
+        context.clearRect(0, 0, canvas.width, canvas.height);
         $('.role').append('');
-        $('.role').append("You are the drawer. Draw a " + validWord);
+        $('.role').append("You are the drawer. Draw the following: " + validWord);
     }
     
     function nextWord(param) {

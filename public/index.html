@@ -30,10 +30,15 @@ h1 {
 canvas {
     width: 800px;
     height: 600px;
-    border: 1px #C7CACD solid;
+    border: 3px #C7CACD solid;
     display: block;
     margin: 0 auto;
 }
+
+.role {
+    text-align: center;
+}
+
 </style>
 
 <!-- JS -->
@@ -45,10 +50,10 @@ canvas {
 <div id="main">
     <h1>Pictionary</h1>
     <div id="top-message">
-        <div class="role"> </div>
         <div id="guess">
             Make a guess: <input type="text">
         </div>
     </div>
     <canvas id="canvas"></canvas>
+    <div class="role"> </div>
 </div>
